@@ -1,7 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import { 
   MenuItem,
-  InputLabel,
   Card,
   FormControl,
   Select,
@@ -10,17 +9,18 @@ import {
 import InfoBox from './InfoBox';
 import Map from './Map';
 import Table from './Table';
+import LineGraph from './LineGraph';
 import './App.css';
-import { sortData } from './utill';
-import { async } from 'q';
+import  {sortData}  from './utill';
 
 
 function App() {
   const [countries,setCountries]=useState([]);
   const [country,setCountry]=useState('worldwide');
   const [countryInfo,setcountryInfo]=useState({});
-  const [tableData,setTableData]=useState({})
+  const [tableData,setTableData]=useState([])
 
+  
   useEffect(() => {
     fetch('https://disease.sh/v3/covid-19/all')
       .then((responce)=> responce.json())
@@ -38,10 +38,9 @@ function App() {
           name: country.country, //engalnd , portugal ...
           value: country.countryInfo.iso2 //UK, POR
         }))
-
-        const sortedData=sortData(data)
-        setTableData(sortData)
-        setCountries(countries)
+        const sortedData=sortData(data);
+        setTableData(sortedData); 
+        setCountries(countries);
       })
     }
     getCountriesData();
@@ -105,6 +104,7 @@ function App() {
           <Table countries={tableData}/>
           <h3>Worldwide new cases</h3>
           {/* Graph */} 
+          <LineGraph/>
         </CardContent>
       </Card>
       </div>
