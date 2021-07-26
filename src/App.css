@@ -21,10 +21,10 @@ body{
   justify-content: space-between;
 }
 
-/* .app__right{
-  background: green;
+.app__right{
+  width: 500px;
 }
-.app__left{
+/* .app__left{
   background: rgb(190, 255, 190);
 } */
 

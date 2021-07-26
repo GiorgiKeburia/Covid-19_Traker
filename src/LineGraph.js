@@ -1,5 +1,56 @@
 import React, { useState,useEffect } from 'react'
 import {Line} from 'react-chartjs-2'
+import numeral from 'numeral'
+
+const options = {
+    legend: {
+      display: false,
+    },
+    elements: {
+      point: {
+        radius: 0,
+      },
+    },
+    title: {
+        display: true,
+        text: 'Chart.js Line Chart'
+      },
+    maintainAspectRatio: false,
+    tooltips: {
+      mode: "index",
+      intersect: false,
+      callbacks: {
+        label: function (tooltipItem, data) {
+          return numeral(tooltipItem.value).format("+0,0");
+        },
+      },
+    },
+    scales: {
+      xAxes: [
+        {
+          type: "time",
+          time: {
+            format: "MM/DD/YY",
+            tooltipFormat: "ll",
+          },
+        },
+      ],
+      yAxes: [
+        {
+          gridLines: {
+            display: false,
+          },
+          ticks: {
+            // Include a dollar sign in the ticks
+            callback: function (value, index, values) {
+              return numeral(value).format("0a");
+            },
+          },
+        },
+      ],
+    },
+  };
+  
 
 function LineGraph() {
 
@@ -13,7 +64,7 @@ function LineGraph() {
             if(lastDataPoint){
                 const newDataPoint={
                     x: date,
-                    y: data[casesType][date]-  lastDataPoint
+                    y: data[casesType][date]-lastDataPoint
                 }
                 chartData.push(newDataPoint);
             }
@@ -25,29 +76,39 @@ function LineGraph() {
 
 
     useEffect(()=>{
-        fetch('https://disease.sh/v3/covid-19/historical/all?lastdays=120')
-        .then(responce=>responce.json())
-        .then(data =>{
-            const chartData=buildChartData(data)
-            setData(chartData)
-        })
+        const fetchData=async()=>{
+            await fetch('https://disease.sh/v3/covid-19/historical/all?lastdays=120')
+            .then(responce=>responce.json())
+            .then(data =>{
+                let chartData=buildChartData(data,'cases')
+                setData(chartData)
+            })
+        };
+        fetchData();
     },[])
 
 
 
     return (
         <div>
-            <h1>I am a graph</h1>
+            {data?.length>0 && (
             <Line 
                 data={{
                     datasets: [
                         {
-                            backgroundColor: 'red',
-                            borderColor: 'yellow',
-                            data: data
+                            backgroundColor: 'rgba(7, 117, 131, 0.801)',
+                            borderColor: '#012a4a',
+                            borderWidth: 1,
+                            data: data,
+                            fill: true,
                         }
-                    ]
-            }}/>
+                    ],
+            }}
+            
+            option={options}
+            />
+
+            )}
         </div>
     )
 }
