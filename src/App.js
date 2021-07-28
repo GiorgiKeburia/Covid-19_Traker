@@ -20,8 +20,10 @@ function App() {
   const [country,setCountry]=useState('worldwide');
   const [countryInfo,setcountryInfo]=useState({});
   const [tableData,setTableData]=useState([]);
-  const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796 });
-  const [mapZoom, setMapZoom] = useState(3);
+  const [mapCenter, setMapCenter] = useState({ lat: 34, lng: -40 });
+  const [mapZoom, setMapZoom] = useState(2);
+  const [mapCountries, setMapCountries]=useState([])
+  // const [casesType, setCasesType] = useState("cases");
 
   useEffect(() => {
     fetch('https://disease.sh/v3/covid-19/all')
@@ -42,11 +44,14 @@ function App() {
         }))
         const sortedData=sortData(data);
         setTableData(sortedData); 
+        setMapCountries(data)
         setCountries(countries);
       })
     }
     getCountriesData();
   }, [])
+
+  console.log(mapZoom)
 
   const onCountryChange = async (event)=>{
     const countryCode=event.target.value;
@@ -56,17 +61,16 @@ function App() {
     await fetch(url)
       .then(response => response.json())
       .then(data => {
-        setMapCenter([ data.countryInfo.lat, data.countryInfo.long]);
-        setMapZoom(4);
         setCountry(countryCode)
         setcountryInfo(data);
+        setMapCenter([ data.countryInfo.lat, data.countryInfo.long]);
+        setMapZoom(5);
       })
   }
 
   return (
     <div className="app">
       <div className="app__left">
-
         {/* Header */}
         {/* Title + Select input dropdown field */}
         <div className="app__header">
@@ -95,10 +99,9 @@ function App() {
       </div>
 
         {/* Map */}
-        <Map
-          center={mapCenter}
-          zoom={mapZoom}
-        />
+
+        <Map casesType="cases" countries={mapCountries} center = {mapCenter} zoom = {mapZoom} />
+      
       </div>
       <Card className="app__right">
         <CardContent>

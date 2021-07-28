@@ -1,16 +1,21 @@
-import React from 'react'
-import "./Map.css"
-import { MapContainer as LeafletMap, TileLayer } from "react-leaflet";
+import React from 'react';
+import "./Map.css";
+import {MapContainer as LeaftMap, TileLayer} from "react-leaflet";
+import { showDataOnMap } from './utill';
 
-function Map({center,zoom}) {
+function Map({ countries,casesType, center, zoom }) {
+    const state = {
+        keyMAP: Math.random(),
+     };
     return (
         <div className="map"> 
-            <LeafletMap center={center} zoom={zoom}>
+            <LeaftMap key={state.keyMAP} center={center} zoom={zoom}>
                 <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-            </LeafletMap>
+                {showDataOnMap(countries, casesType)}
+            </LeaftMap>
         </div>
     )
 }
