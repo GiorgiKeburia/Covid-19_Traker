@@ -52,53 +52,51 @@ const options = {
   };
   
 
-function LineGraph() {
-
-    const [data, setData]=useState({});
-
-    const buildChartData=(data,casesType='cases') => {
-        const chartData =[];
-        let lastDataPoint;
-
-        for (let date in data.cases){
-            if(lastDataPoint){
-                const newDataPoint={
-                    x: date,
-                    y: data[casesType][date]-lastDataPoint
-                }
-                chartData.push(newDataPoint);
-            }
-            lastDataPoint = data[casesType][date]
+  const buildChartData = (data, casesType) => {
+    let chartData = [];
+    let lastDataPoint;
+    for (let date in data.cases) {
+      if (lastDataPoint) {
+        let newDataPoint = {
+          x: date,
+          y: data[casesType][date] - lastDataPoint,
         };
-        return chartData
+        chartData.push(newDataPoint);
+      }
+      lastDataPoint = data[casesType][date];
     }
-
-
-
-    useEffect(()=>{
-        const fetchData=async()=>{
-            await fetch('https://disease.sh/v3/covid-19/historical/all?lastdays=120')
-            .then(responce=>responce.json())
-            .then(data =>{
-                let chartData=buildChartData(data,'cases')
-                setData(chartData)
-            })
-        };
-        fetchData();
-    },[])
-
-
-
+    return chartData;
+  };
+  
+  function LineGraph({ casesType , ...props}) {
+    const [data, setData] = useState({});
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=120")
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            let chartData = buildChartData(data, casesType);
+            setData(chartData);
+            console.log(chartData);
+            // buildChart(chartData);
+          });
+      };
+  
+      fetchData();
+    }, [casesType]);
     return (
-        <div>
+        <div className={props.className} >
             {data?.length>0 && (
             <Line 
                 data={{
                     datasets: [
                         {
-                            backgroundColor: 'rgba(7, 117, 131, 0.801)',
-                            borderColor: '#012a4a',
-                            borderWidth: 1,
+                            backgroundColor: '#e56b6f',
+                            borderColor: '#0081a7',
+                            borderWidth: 0.5,
                             data: data,
                             fill: true,
                         }

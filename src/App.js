@@ -12,7 +12,7 @@ import Table from './Table';
 import LineGraph from './LineGraph';
 import './App.css';
 import "leaflet/dist/leaflet.css"
-import  {sortData}  from './utill';
+import  {prettyPrintStat, sortData}  from './utill';
 
 
 function App() {
@@ -21,8 +21,10 @@ function App() {
   const [countryInfo,setcountryInfo]=useState({});
   const [tableData,setTableData]=useState([]);
   const [mapCenter, setMapCenter] = useState({ lat: 34, lng: -40 });
-  const [mapZoom, setMapZoom] = useState(2);
-  const [mapCountries, setMapCountries]=useState([])
+  const [mapZoom, setMapZoom] = useState(3);
+  const [mapCountries, setMapCountries]=useState([]);
+  const [casesType, setCasesType]=useState('cases')
+
   // const [casesType, setCasesType] = useState("cases");
 
   useEffect(() => {
@@ -44,14 +46,13 @@ function App() {
         }))
         const sortedData=sortData(data);
         setTableData(sortedData); 
-        setMapCountries(data)
+        setMapCountries(data);
         setCountries(countries);
       })
     }
     getCountriesData();
   }, [])
 
-  console.log(mapZoom)
 
   const onCountryChange = async (event)=>{
     const countryCode=event.target.value;
@@ -64,7 +65,7 @@ function App() {
         setCountry(countryCode)
         setcountryInfo(data);
         setMapCenter([ data.countryInfo.lat, data.countryInfo.long]);
-        setMapZoom(5);
+        setMapZoom(6);
       })
   }
 
@@ -74,7 +75,7 @@ function App() {
         {/* Header */}
         {/* Title + Select input dropdown field */}
         <div className="app__header">
-          <h1>Covid</h1>
+          <h1>Covid-19 <span className="header__span" >Data Base</span></h1>
           <FormControl className="app__dropdown">
             <Select variant="outlined" onChange={onCountryChange} value={country} >
               <MenuItem value='worldwide'>World Wide</MenuItem>
@@ -89,28 +90,31 @@ function App() {
 
       <div className="app__stats">
         {/* infoBoxs title="corona virus cases" */}
-        <InfoBox title="Coronavirus Cases" cases={countryInfo.todayCases} total={countryInfo.cases}/>
+        <InfoBox 
+            active={casesType==="cases"}
+           onClick={e=> setCasesType('cases')}
+           title="Coronavirus Cases" cases={prettyPrintStat(countryInfo.todayCases)} total={prettyPrintStat(countryInfo.cases)}/>
 
         {/* InfoBoxs title="Recovery" */}
-        <InfoBox title="Recovered" cases={countryInfo.todayRecovered} total={countryInfo.recovered}/>
+        <InfoBox active={casesType==="recovered"} onClick={e=> setCasesType('recovered')} title="Recovered" cases={prettyPrintStat(countryInfo.todayRecovered)} total={prettyPrintStat(countryInfo.recovered)}/>
 
         {/* infoBoxs */}
-        <InfoBox title="Death" cases={countryInfo.todayDeaths} total={countryInfo.deaths} />
+        <InfoBox active={casesType==="deaths"} onClick={e=> setCasesType('deaths')} title="Death" cases={prettyPrintStat(countryInfo.todayDeaths)} total={prettyPrintStat(countryInfo.deaths)} />
       </div>
 
         {/* Map */}
 
-        <Map casesType="cases" countries={mapCountries} center = {mapCenter} zoom = {mapZoom} />
+        <Map casesType={casesType} countries={mapCountries} center = {mapCenter} zoom = {mapZoom} />
       
       </div>
       <Card className="app__right">
-        <CardContent>
-          <h3>Live cases by country</h3>
+        <CardContent className="Right--box">
+          <h3 className="Table header_names">Live cases by country</h3>
           {/* Table */}
           <Table countries={tableData}/>
-          <h3>Worldwide new cases</h3>
+          <h3 className="LineGraph header_names">Worldwide new {casesType}</h3>
           {/* Graph */} 
-          <LineGraph/>
+          <LineGraph className="app__graph" casesType={ casesType}/>
         </CardContent>
       </Card>
       </div>

@@ -12,6 +12,6 @@
     padding: 0.5rem;
 }
 .table tr:nth-of-type(odd){
-    color: white;
-    background: rgba(7, 117, 131, 0.801);
+    color: rgb(65, 65, 65);
+    background: rgba(74, 112, 134, 0.089);
 }
